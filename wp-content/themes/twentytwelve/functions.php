@@ -476,7 +476,6 @@ function codex_custom_init() {
                 'show_ui' => true,
                 'show_in_menu' => true,
                 'query_var' => true,
-                'taxonomies' => array('category', 'post_tag'),
                 'rewrite' => array( 'slug' => 'project' ),
                 'capability_type' => 'post',
                 'has_archive' => true,
@@ -486,5 +485,52 @@ function codex_custom_init() {
                 );
 
   register_post_type( 'project', $args );
+
+  $labels = array(
+                  'name' => _x( 'Project Categories', 'taxonomy general name' ),
+                  'singular_name' => _x( 'Project Category', 'taxonomy singular name' ),
+                  'search_items' =>  __( 'Search Categories' ),
+                  'all_items' => __( 'All Categories' ),
+                  'parent_item' => __( 'Parent Category' ),
+                  'parent_item_colon' => __( 'Parent Category:' ),
+                  'edit_item' => __( 'Edit Category' ),
+                  'update_item' => __( 'Update Category' ),
+                  'add_new_item' => __( 'Add New Category' ),
+                  'new_item_name' => __( 'New Category Name' ),
+                  'menu_name' => __( 'Project Categories' )
+                  );
+
+  register_taxonomy(
+                    'projectcat',
+                    'project',
+                    array(
+                          'hierarchical' => true,
+                          'labels' => $labels,
+                          'rewrite' => array( 'slug' => 'cat' )
+                          )
+                    );
+
 }
 add_action( 'init', 'codex_custom_init' );
+
+function project_custom_columns($column) {
+    global $post;
+    switch ($column){
+    case "projectcat":
+      $terms = get_the_term_list( $post->ID , 'projectcat' , '' , ', ' , '' );
+      if ( is_string( $terms ) ) {
+        echo $terms;
+      } else {
+        echo '--';
+      }
+      break;
+    }
+}
+add_action ("manage_posts_custom_column", "project_custom_columns");
+
+function project_edit_columns($columns) {
+    $extracolumns = array_merge($columns,
+                                array("projectcat" => "Categories"));
+    return $extracolumns;
+}
+add_filter("manage_project_posts_columns", "project_edit_columns");
