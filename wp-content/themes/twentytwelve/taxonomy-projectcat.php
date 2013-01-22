@@ -18,18 +18,18 @@
  */
 
 get_header();
-$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 ?>
 
         <section id="primary" class="site-content">
                 <div id="content" role="main">
                         <header class="archive-header">
                                 <h1 class="archive-title"><?php
-                                echo apply_filters( 'the_title', $term->name );
+                                single_term_title();
                                 ?> Projects</h1>
                         </header><!-- .archive-header -->
-
-                        <p><?php echo $term->description;?></p>
+                        <div class="archive-description">
+                        <?php echo term_description()?>
+                        </div>
                 <?php if ( have_posts() ) : ?>
                         <?php
                         /* Start the Loop */
