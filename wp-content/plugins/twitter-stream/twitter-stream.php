@@ -261,7 +261,7 @@ function twitter_stream($args = FALSE) {
                 /* Create a TwitterOauth object with consumer/user tokens. */
                 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
                 $connection->format = 'xml';
-                $content = $connection->get('statuses/user_timeline', array('screen_name' => $r['username'], 'count' => 10, 'include_rts' => $r['retweets']));
+                $content = $connection->get('statuses/user_timeline', array('screen_name' => $r['username'], 'count' => 20, 'include_rts' => $r['retweets']));
         }
 
         if($cache === FALSE) {
@@ -356,8 +356,11 @@ function twitter_stream_parse_tweets($content, $r) {
         $followers = $twitxml->status[0]->user->followers_count;
         $username = $twitxml->status[0]->user->screen_name;
         $o = '';
+        $i = 0;
         foreach($twitxml->status as $tweet) {
-
+          $i++;
+          if ($i > $r['count'])
+            break;
                 //Find all URL's mentioned and store them in $matches.
                 //$pattern = "/(http:\/\/|https:\/\/)?(?(1)(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|([-a-z0-9_]+\.)?[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?)|(www\.[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?))\/?[a-z0-9._\/~#&=;%+?-]+[a-z0-9\/#=?]{1,1}/is";
                 //New regex pattern to match t.co urls thanks to Jonny Vaughan
